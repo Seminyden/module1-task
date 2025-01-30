@@ -1,15 +1,15 @@
 package com.gmail.seminyden.controller;
 
+import com.gmail.seminyden.model.EntityIdDTO;
+import com.gmail.seminyden.model.EntityIdsDTO;
 import com.gmail.seminyden.service.ResourceService;
 import jakarta.annotation.Resource;
-import org.apache.tika.exception.TikaException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import jakarta.websocket.server.PathParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.xml.sax.SAXException;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 @RestController
 @RequestMapping("/resources")
@@ -19,20 +19,31 @@ public class ResourceController {
     private ResourceService resourceService;
 
     @PostMapping(consumes = "audio/mpeg")
-    public ResponseEntity<?> createResource(@RequestBody byte[] resource) throws IOException {
-        try(InputStream inputStream = new ByteArrayInputStream(resource)) {
-
-            return ResponseEntity.ok("ok");
-        }
+    public ResponseEntity<?> createResource(@RequestBody byte[] resource) {
+        EntityIdDTO entityIdDTO = resourceService.createResource(resource);
+        return ResponseEntity.ok(entityIdDTO);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getResource(@PathVariable("id") Integer id) {
-        return null;
+    @GetMapping(value = "/{id}", produces = "audio/mpeg")
+    public ResponseEntity<byte[]> getResource(
+            @Valid
+            @Pattern(regexp = "^\\d+$", message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero)")
+            @PathVariable("id")
+            String id
+    ) {
+        byte[] resource = resourceService.getResource(id);
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteResources(@RequestParam("id") String ids) {
-        return null;
+    public ResponseEntity<?> deleteResources(
+            @Valid
+            @Size(max = 200, message = "CSV string length must be less than 200 characters")
+            @Pattern(regexp = "^\\d+(?:,\\d+)*$", message = "Should be comma-separated list of metadata IDs")
+            @PathParam("id")
+            String id
+    ) {
+        EntityIdsDTO entityIdsDTO = resourceService.deleteResources(id);
+        return ResponseEntity.ok(entityIdsDTO);
     }
 }

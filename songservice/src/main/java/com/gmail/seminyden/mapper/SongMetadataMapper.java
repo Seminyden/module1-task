@@ -1,14 +1,18 @@
 package com.gmail.seminyden.mapper;
 
 import com.gmail.seminyden.entity.SongMetadataEntity;
-import com.gmail.seminyden.model.SongIdDTO;
+import com.gmail.seminyden.model.EntityIdDTO;
 import com.gmail.seminyden.model.SongMetadataDTO;
-import lombok.experimental.UtilityClass;
+import com.gmail.seminyden.model.EntityIdsDTO;
+import org.springframework.stereotype.Component;
 
-@UtilityClass
+import java.util.Arrays;
+import java.util.List;
+
+@Component
 public class SongMetadataMapper {
 
-    public static SongMetadataEntity toSongMetadataEntity(SongMetadataDTO dto) {
+    public SongMetadataEntity toSongMetadataEntity(SongMetadataDTO dto) {
         SongMetadataEntity entity = new SongMetadataEntity();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
@@ -19,7 +23,7 @@ public class SongMetadataMapper {
         return entity;
     }
 
-    public static SongMetadataDTO toSongMetadataDTO(SongMetadataEntity entity) {
+    public SongMetadataDTO toSongMetadataDTO(SongMetadataEntity entity) {
         SongMetadataDTO dto = new SongMetadataDTO();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
@@ -30,9 +34,19 @@ public class SongMetadataMapper {
         return dto;
     }
 
-    public static SongIdDTO toSongIdDTO(SongMetadataEntity entity) {
-        return SongIdDTO.builder()
+    public EntityIdDTO toEntityIdDTO(SongMetadataEntity entity) {
+        return EntityIdDTO.builder()
                 .id(entity.getId())
                 .build();
+    }
+
+    public EntityIdsDTO toEntityIdsDTO(List<String> ids) {
+        return EntityIdsDTO.builder()
+                .ids(ids)
+                .build();
+    }
+
+    public List<String> toIdList(String id) {
+        return Arrays.asList(id.split(","));
     }
 }
