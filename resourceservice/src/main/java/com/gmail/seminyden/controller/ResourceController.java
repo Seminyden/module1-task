@@ -5,6 +5,7 @@ import com.gmail.seminyden.model.EntityIdsDTO;
 import com.gmail.seminyden.service.ResourceService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.websocket.server.PathParam;
@@ -19,7 +20,12 @@ public class ResourceController {
     private ResourceService resourceService;
 
     @PostMapping(consumes = "audio/mpeg")
-    public ResponseEntity<?> createResource(@RequestBody byte[] resource) {
+    public ResponseEntity<?> createResource(
+            @Valid
+            @RequestBody
+            @NotNull(message = "File should not be blank")
+            byte[] resource
+    ) {
         EntityIdDTO entityIdDTO = resourceService.createResource(resource);
         return ResponseEntity.ok(entityIdDTO);
     }
@@ -27,7 +33,7 @@ public class ResourceController {
     @GetMapping(value = "/{id}", produces = "audio/mpeg")
     public ResponseEntity<byte[]> getResource(
             @Valid
-            @Pattern(regexp = "^\\d+$", message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero)")
+            @Pattern(regexp = "^[1-9]\\d*$", message = "The provided ID is invalid (e.g., contains letters, decimals, is negative, or zero)")
             @PathVariable("id")
             String id
     ) {

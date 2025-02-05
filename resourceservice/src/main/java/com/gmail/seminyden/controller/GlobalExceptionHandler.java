@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.method.ParameterValidationResult;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,6 +38,16 @@ public class GlobalExceptionHandler {
                         .errorMessage("Validation error")
                         .errorCode("400")
                         .details(getDetails(e.getParameterValidationResults()))
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(HttpMediaTypeNotSupportedException e) {
+        return ResponseEntity.badRequest().body(
+                ErrorResponse.builder()
+                        .errorMessage(e.getMessage())
+                        .errorCode("400")
                         .build()
         );
     }

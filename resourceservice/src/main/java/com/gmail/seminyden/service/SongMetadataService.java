@@ -17,7 +17,6 @@ import org.xml.sax.SAXException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 @Service
 public class SongMetadataService {
@@ -34,7 +33,7 @@ public class SongMetadataService {
         return songMetadataClient.create(songMetadataDTO);
     }
 
-    public EntityIdsDTO deleteSongsMetadata(List<Integer> songIds) {
+    public EntityIdsDTO deleteSongsMetadata(String songIds) {
         return songMetadataClient.delete(songIds);
     }
 

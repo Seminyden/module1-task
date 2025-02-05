@@ -83,15 +83,18 @@ public class GlobalExceptionHandler {
     private Map<String, String> getDetails(List<ParameterValidationResult> result) {
         Map<String, String> details = new HashMap<>();
         for (ParameterValidationResult validationResult : result) {
-            String parameterName = getParameterName(validationResult);
             for (MessageSourceResolvable resolvableError : validationResult.getResolvableErrors()) {
-                details.put(parameterName, resolvableError.getDefaultMessage());
+                details.put(getParameterName(validationResult, resolvableError), resolvableError.getDefaultMessage());
             }
         }
         return details;
     }
 
-    private String getParameterName(ParameterValidationResult validationResult) {
+    private String getParameterName(ParameterValidationResult validationResult,
+                                    MessageSourceResolvable resolvableError) {
+        if (resolvableError instanceof FieldError) {
+            return ((FieldError) resolvableError).getField();
+        }
         return validationResult.getMethodParameter().getParameterName();
     }
 }

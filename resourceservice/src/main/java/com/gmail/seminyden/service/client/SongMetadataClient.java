@@ -5,11 +5,10 @@ import com.gmail.seminyden.model.EntityIdsDTO;
 import com.gmail.seminyden.model.SongMetadataDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Component
 public class SongMetadataClient {
@@ -17,25 +16,34 @@ public class SongMetadataClient {
     @Value("${app.songs.metadata.base.url}")
     private String baseUrl;
 
-    @Value("${app.songs.metadata.songs.endpoint}")
-    private String songsEndpoint;
+    @Value("${app.songs.metadata.create.endpoint}")
+    private String createEndpoint;
+
+    @Value("${app.songs.metadata.delete.endpoint}")
+    private String deleteEndpoint;
 
     public EntityIdDTO create(SongMetadataDTO songMetadataDTO) {
-        System.out.println(baseUrl + songsEndpoint);
+        System.out.println(baseUrl + createEndpoint);
         return new RestTemplate().postForObject(
-                baseUrl + songsEndpoint,
-                new HttpEntity<>(songMetadataDTO),
+                baseUrl + createEndpoint,
+                new HttpEntity<>(songMetadataDTO, getHeaders()),
                 EntityIdDTO.class
         );
     }
 
-    public EntityIdsDTO delete(List<Integer> ids) {
-        System.out.println(baseUrl + songsEndpoint + "?id=" + ids);
+    public EntityIdsDTO delete(String ids) {
+        System.out.println(baseUrl + deleteEndpoint + ids);
         return new RestTemplate().exchange(
-                baseUrl + songsEndpoint + "?id=" + ids,
-                HttpMethod.POST,
+                baseUrl + deleteEndpoint + ids,
+                HttpMethod.DELETE,
                 new HttpEntity<>(null),
                 EntityIdsDTO.class
         ).getBody();
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return headers;
     }
 }

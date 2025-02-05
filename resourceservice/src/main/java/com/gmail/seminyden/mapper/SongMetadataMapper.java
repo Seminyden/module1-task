@@ -1,6 +1,7 @@
 package com.gmail.seminyden.mapper;
 
 import com.gmail.seminyden.model.SongMetadataDTO;
+import com.gmail.seminyden.utils.TimeConverter;
 import org.apache.tika.metadata.Metadata;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +14,10 @@ public class SongMetadataMapper {
         }
         return SongMetadataDTO.builder()
                 .id(id)
-                .name(metadata.get("ds:title"))
+                .name(metadata.get("dc:title"))
                 .artist(metadata.get("xmpDM:artist"))
                 .album(metadata.get("xmpDM:album"))
-                .duration(metadata.get("xmpDM:duration"))
+                .duration(TimeConverter.convert(metadata.get("xmpDM:duration")))
                 .year(metadata.get("xmpDM:releaseDate"))
                 .build();
     }

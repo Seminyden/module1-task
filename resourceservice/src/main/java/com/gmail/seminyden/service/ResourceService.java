@@ -47,6 +47,7 @@ public class ResourceService {
                     deletedResourceIds.add(resourceEntity.getId());
                     resourceRepository.delete(resourceEntity);
                 });
-        return songMetadataService.deleteSongsMetadata(deletedResourceIds);
+        songMetadataService.deleteSongsMetadata(ids);
+        return resourceMapper.toEntityIdsDTO(deletedResourceIds);
     }
 }

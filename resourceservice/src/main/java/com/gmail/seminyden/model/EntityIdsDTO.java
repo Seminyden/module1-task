@@ -11,5 +11,5 @@ import java.util.List;
 @Builder
 public class EntityIdsDTO {
 
-    private List<String> ids;
+    private List<Integer> ids;
 }

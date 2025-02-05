@@ -20,20 +20,14 @@ public class ResourceMapper {
 
     public EntityIdDTO toEntityIdDTO(ResourceEntity entity) {
         return EntityIdDTO.builder()
-                .id(toString(entity.getId()))
+                .id(entity.getId())
                 .build();
     }
 
     public EntityIdsDTO toEntityIdsDTO(List<Integer> ids) {
         return EntityIdsDTO.builder()
-                .ids(toStringList(ids))
+                .ids(ids)
                 .build();
-    }
-
-    private List<String> toStringList(List<Integer> ids) {
-        return ids.stream()
-                .map(this::toString)
-                .collect(Collectors.toList());
     }
 
     public String toString(Integer value) {
