@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS resources CASCADE;
+
+DROP SEQUENCE IF EXISTS resources_seq;
+
+CREATE SEQUENCE resources_seq
+START WITH 1
+INCREMENT BY 50;
+
+CREATE TABLE resources (
+	id INTEGER NOT NULL,
+	resource BYTEA,
+	PRIMARY KEY (id)
+);

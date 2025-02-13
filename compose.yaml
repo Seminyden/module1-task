@@ -2,29 +2,47 @@ services:
   resource-db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: resource-db
-      POSTGRES_USER: postgres  # Default, can be omitted if unchanged
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${RESOURCE_DB}
+      POSTGRES_USER: ${RESOURCE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${RESOURCE_DB_PASSWORD}
+    volumes:
+      - ./init-scripts/resource-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"  # Maps container port 5432 to host port 5432
+      - "${RESOURCE_DB_PORT}:${DB_DEFAULT_PORT}"
 
   song-db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: song-db
-      POSTGRES_USER: postgres  # Default, can be omitted if unchanged
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${SONG_DB}
+      POSTGRES_USER: ${SONG_DB_USERNAME} 
+      POSTGRES_PASSWORD: ${SONG_DB_PASSWORD}
+    volumes:
+      - ./init-scripts/song-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5433:5432"  # Maps container port 5432 to host port 5433 (to avoid conflict)
-
-# Related settings for application.properties:
-# 
-# For resource-service:
-# spring.datasource.url=jdbc:postgresql://localhost:5432/resource-db
-# spring.datasource.username=postgres
-# spring.datasource.password=postgres
-#
-# For song-service:
-# spring.datasource.url=jdbc:postgresql://localhost:5433/song-db
-# spring.datasource.username=postgres
-# spring.datasource.password=postgres
+      - "${SONG_DB_PORT}:${DB_DEFAULT_PORT}"
+      
+  resource-service:
+    build:
+      context: ./resource-service
+    environment:
+      PORT: ${RESOURCE_SERVICE_PORT}
+      DB_URL: resource-db
+      DB_PORT: ${RESOURCE_DB_PORT}
+      DB_USERNAME: ${RESOURCE_DB_USERNAME}
+      DB_PASSWORD: ${RESOURCE_DB_PASSWORD}
+      SONG_SERVICE_URL: song-service
+      SONG_SERVICE_PORT: ${SONG_SERVICE_PORT}
+    ports:
+      - "${RESOURCE_SERVICE_PORT}:${RESOURCE_SERVICE_PORT}"
+  
+  song-service:
+    build:
+      context: ./song-service
+    environment:
+      PORT: ${SONG_SERVICE_PORT}
+      DB_URL: song-db
+      DB_PORT: ${SONG_DB_PORT}
+      DB_USERNAME: ${SONG_DB_USERNAME}
+      DB_PASSWORD: ${SONG_DB_PASSWORD}
+    ports:
+      - "${SONG_SERVICE_PORT}:${SONG_SERVICE_PORT}"
